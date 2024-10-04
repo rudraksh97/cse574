@@ -63,7 +63,8 @@ def learnOLERegression(X,y):
     # Output: 
     # w = d x 1 
 	
-    # IMPLEMENT THIS METHOD                                                   
+    # IMPLEMENT THIS METHOD
+    w = np.matmul(np.matmul(inv(np.matmul(X.T,X)), X.T),y)                                                  
     return w
 
 def learnRidgeRegression(X,y,lambd):
@@ -74,7 +75,10 @@ def learnRidgeRegression(X,y,lambd):
     # Output:                                                                  
     # w = d x 1                                                                
 
-    # IMPLEMENT THIS METHOD                                                   
+    # IMPLEMENT THIS METHOD
+    _, d = X.shape
+    ridge_term = lambd*np.identity(d)
+    w = np.matmul(np.matmul(ridge_term + inv(np.matmul(X.T,X)), X.T),y)                                                                                     
     return w
 
 def testOLERegression(w,Xtest,ytest):
@@ -86,6 +90,8 @@ def testOLERegression(w,Xtest,ytest):
     # mse
     
     # IMPLEMENT THIS METHOD
+    N, _ = Xtest.shape
+    mse = (1/N)*np.sum(np.square(ytest-np.multiply(w.T, Xtest)))
     return mse
 
 def regressionObjVal(w, X, y, lambd):
@@ -113,9 +119,9 @@ if __name__ == "__main__":
     # Problem 1
     # load the sample data                                                                 
     if sys.version_info.major == 2:
-        X,y,Xtest,ytest = pickle.load(open('sample.pickle','rb'))
+        X,y,Xtest,ytest = pickle.load(open('./Assignment1/basecode/sample.pickle','rb'))
     else:
-        X,y,Xtest,ytest = pickle.load(open('sample.pickle','rb'),encoding = 'latin1')
+        X,y,Xtest,ytest = pickle.load(open('./Assignment1/basecode/sample.pickle','rb'),encoding = 'latin1')
 
     # LDA
     means,covmat = ldaLearn(X,y)
@@ -152,9 +158,9 @@ if __name__ == "__main__":
     plt.show()
     # Problem 2
     if sys.version_info.major == 2:
-        X,y,Xtest,ytest = pickle.load(open('diabetes.pickle','rb'))
+        X,y,Xtest,ytest = pickle.load(open('./Assignment1/basecode/diabetes.pickle','rb'))
     else:
-        X,y,Xtest,ytest = pickle.load(open('diabetes.pickle','rb'),encoding = 'latin1')
+        X,y,Xtest,ytest = pickle.load(open('./Assignment1/basecode/diabetes.pickle','rb'),encoding = 'latin1')
 
     # add intercept
     X_i = np.concatenate((np.ones((X.shape[0],1)), X), axis=1)
