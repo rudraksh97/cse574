@@ -85,13 +85,13 @@ def testOLERegression(w,Xtest,ytest):
     # Inputs:
     # w = d x 1
     # Xtest = N x d
-    # ytest = X x 1
+    # ytest = N x 1
     # Output:
     # mse
     
     # IMPLEMENT THIS METHOD
     N, _ = Xtest.shape
-    mse = (1/N)*np.sum(np.square(ytest-np.multiply(w.T, Xtest)))
+    mse = (1/N)*np.sum(np.square(ytest-np.matmul(Xtest, w)))
     return mse
 
 def regressionObjVal(w, X, y, lambd):
@@ -101,8 +101,13 @@ def regressionObjVal(w, X, y, lambd):
     # lambda                                                                  
 
     # IMPLEMENT THIS METHOD
-    # error_grad = error_grad.flatten()                               
-    return 0, 0
+    w = w.reshape(w.shape[0], 1)
+    residual = y - np.matmul(X, w)
+    error = (1 / 2) * np.dot(residual.T, residual) + (lambd / 2) * np.dot(w.T, w)
+    error = error[0][0]
+    error_grad = -1 * np.matmul(X.T, residual) + lambd * w
+    error_grad = error_grad.flatten()                              
+    return error, error_grad
 
 def mapNonLinear(x,p):
     # Inputs:                                                                  
