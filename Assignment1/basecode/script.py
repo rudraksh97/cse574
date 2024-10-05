@@ -18,7 +18,7 @@ def ldaLearn(X,y):
     # covmat - A single d x d learnt covariance matrix 
     
     # IMPLEMENT THIS METHOD 
-    return means,covmat
+    return
 
 def qdaLearn(X,y):
     # Inputs
@@ -30,7 +30,7 @@ def qdaLearn(X,y):
     # covmats - A list of k d x d learnt covariance matrices for each of the k classes
     
     # IMPLEMENT THIS METHOD
-    return means,covmats
+    return
 
 def ldaTest(means,covmat,Xtest,ytest):
     # Inputs
@@ -42,7 +42,7 @@ def ldaTest(means,covmat,Xtest,ytest):
     # ypred - N x 1 column vector indicating the predicted labels
 
     # IMPLEMENT THIS METHOD
-    return acc,ypred
+    return
 
 def qdaTest(means,covmats,Xtest,ytest):
     # Inputs
@@ -54,7 +54,7 @@ def qdaTest(means,covmats,Xtest,ytest):
     # ypred - N x 1 column vector indicating the predicted labels
 
     # IMPLEMENT THIS METHOD
-    return acc,ypred
+    return
 
 def learnOLERegression(X,y):
     # Inputs:                                                         
@@ -101,8 +101,8 @@ def regressionObjVal(w, X, y, lambd):
     # lambda                                                                  
 
     # IMPLEMENT THIS METHOD
-    error_grad = error_grad.flatten()                                
-    return error, error_grad
+    # error_grad = error_grad.flatten()                               
+    return 0, 0
 
 def mapNonLinear(x,p):
     # Inputs:                                                                  
@@ -112,6 +112,11 @@ def mapNonLinear(x,p):
     # Xp - (N x (p+1)) 
 	
     # IMPLEMENT THIS METHOD
+    N = x.shape[0]
+    Xp = np.zeros((N, p))
+    print(Xp)
+    for i in range(1, p + 1):
+        Xp[:, i-1] = x**i
     return Xp
 
 # Main script
@@ -123,39 +128,39 @@ if __name__ == "__main__":
     else:
         X,y,Xtest,ytest = pickle.load(open('./Assignment1/basecode/sample.pickle','rb'),encoding = 'latin1')
 
-    # LDA
-    means,covmat = ldaLearn(X,y)
-    ldaacc,ldares = ldaTest(means,covmat,Xtest,ytest)
-    print('LDA Accuracy = '+str(ldaacc))
-    # QDA
-    means,covmats = qdaLearn(X,y)
-    qdaacc,qdares = qdaTest(means,covmats,Xtest,ytest)
-    print('QDA Accuracy = '+str(qdaacc))
+    # # LDA
+    # means,covmat = ldaLearn(X,y)
+    # ldaacc,ldares = ldaTest(means,covmat,Xtest,ytest)
+    # print('LDA Accuracy = '+str(ldaacc))
+    # # QDA
+    # means,covmats = qdaLearn(X,y)
+    # qdaacc,qdares = qdaTest(means,covmats,Xtest,ytest)
+    # print('QDA Accuracy = '+str(qdaacc))
 
-    # plotting boundaries
-    x1 = np.linspace(-5,20,100)
-    x2 = np.linspace(-5,20,100)
-    xx1,xx2 = np.meshgrid(x1,x2)
-    xx = np.zeros((x1.shape[0]*x2.shape[0],2))
-    xx[:,0] = xx1.ravel()
-    xx[:,1] = xx2.ravel()
+    # # plotting boundaries
+    # x1 = np.linspace(-5,20,100)
+    # x2 = np.linspace(-5,20,100)
+    # xx1,xx2 = np.meshgrid(x1,x2)
+    # xx = np.zeros((x1.shape[0]*x2.shape[0],2))
+    # xx[:,0] = xx1.ravel()
+    # xx[:,1] = xx2.ravel()
 
-    fig = plt.figure(figsize=[12,6])
-    plt.subplot(1, 2, 1)
+    # fig = plt.figure(figsize=[12,6])
+    # plt.subplot(1, 2, 1)
 
-    zacc,zldares = ldaTest(means,covmat,xx,np.zeros((xx.shape[0],1)))
-    plt.contourf(x1,x2,zldares.reshape((x1.shape[0],x2.shape[0])),alpha=0.3)
-    plt.scatter(Xtest[:,0],Xtest[:,1],c=ytest.ravel())
-    plt.title('LDA')
+    # zacc,zldares = ldaTest(means,covmat,xx,np.zeros((xx.shape[0],1)))
+    # plt.contourf(x1,x2,zldares.reshape((x1.shape[0],x2.shape[0])),alpha=0.3)
+    # plt.scatter(Xtest[:,0],Xtest[:,1],c=ytest.ravel())
+    # plt.title('LDA')
 
-    plt.subplot(1, 2, 2)
+    # plt.subplot(1, 2, 2)
 
-    zacc,zqdares = qdaTest(means,covmats,xx,np.zeros((xx.shape[0],1)))
-    plt.contourf(x1,x2,zqdares.reshape((x1.shape[0],x2.shape[0])),alpha=0.3)
-    plt.scatter(Xtest[:,0],Xtest[:,1],c=ytest.ravel())
-    plt.title('QDA')
+    # zacc,zqdares = qdaTest(means,covmats,xx,np.zeros((xx.shape[0],1)))
+    # plt.contourf(x1,x2,zqdares.reshape((x1.shape[0],x2.shape[0])),alpha=0.3)
+    # plt.scatter(Xtest[:,0],Xtest[:,1],c=ytest.ravel())
+    # plt.title('QDA')
 
-    plt.show()
+    # plt.show()
     # Problem 2
     if sys.version_info.major == 2:
         X,y,Xtest,ytest = pickle.load(open('./Assignment1/basecode/diabetes.pickle','rb'))
