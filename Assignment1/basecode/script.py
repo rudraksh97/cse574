@@ -103,7 +103,7 @@ def regressionObjVal(w, X, y, lambd):
     # IMPLEMENT THIS METHOD
     w = w.reshape(w.shape[0], 1)
     residual = y - np.matmul(X, w)
-    error = (1 / 2) * np.dot(residual.T, residual) + (lambd / 2) * np.dot(w.T, w)
+    error = (1 / 2) * np.matmul(residual.T, residual) + (lambd / 2) * np.matmul(w.T, w)
     error = error[0][0]
     error_grad = -1 * np.matmul(X.T, residual) + lambd * w
     error_grad = error_grad.flatten()                              
