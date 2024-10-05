@@ -78,7 +78,7 @@ def learnRidgeRegression(X,y,lambd):
     # IMPLEMENT THIS METHOD
     _, d = X.shape
     ridge_term = lambd*np.identity(d)
-    w = np.matmul(np.matmul(ridge_term + inv(np.matmul(X.T,X)), X.T),y)                                                                                     
+    w = np.matmul(np.matmul(inv(ridge_term + np.matmul(X.T,X)), X.T),y)                                                                                     
     return w
 
 def testOLERegression(w,Xtest,ytest):
