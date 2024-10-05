@@ -91,7 +91,8 @@ def testOLERegression(w,Xtest,ytest):
     
     # IMPLEMENT THIS METHOD
     N, _ = Xtest.shape
-    mse = (1/N)*np.sum(np.square(ytest-np.matmul(Xtest, w)))
+    ypred = np.matmul(Xtest, w)
+    mse = (1/N)*np.sum(np.square(ytest-ypred))
     return mse
 
 def regressionObjVal(w, X, y, lambd):
