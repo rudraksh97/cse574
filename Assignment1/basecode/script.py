@@ -114,7 +114,7 @@ def mapNonLinear(x,p):
     # IMPLEMENT THIS METHOD
     N = x.shape[0]
     Xp = np.zeros((N, p))
-    print(Xp)
+    
     for i in range(1, p + 1):
         Xp[:, i-1] = x**i
     return Xp
