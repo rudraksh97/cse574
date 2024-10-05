@@ -64,7 +64,7 @@ def learnOLERegression(X,y):
     # w = d x 1 
 	
     # IMPLEMENT THIS METHOD
-    w = np.matmul(np.matmul(inv(np.matmul(X.T,X)), X.T),y)                                                  
+    w = np.matmul(np.matmul(inv(np.matmul(X.T,X)), X.T),y)                                    
     return w
 
 def learnRidgeRegression(X,y,lambd):
