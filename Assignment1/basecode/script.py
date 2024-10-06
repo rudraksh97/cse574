@@ -118,11 +118,13 @@ def mapNonLinear(x,p):
     # Xp - (N x (p+1)) 
 	
     # IMPLEMENT THIS METHOD
+
     N = x.shape[0]
-    Xp = np.zeros((N, p))
-    
-    for i in range(1, p + 1):
-        Xp[:, i-1] = x**i
+    x = x.reshape((N, 1))
+    Xp = np.zeros((N, p+1))
+
+    for i in range(p + 1):
+        Xp[:, i] = x[:, 0]**i
     return Xp
 
 # Main script
@@ -239,7 +241,7 @@ if __name__ == "__main__":
 
     # Problem 5
     pmax = 7
-    lambda_opt = 0.055 # REPLACE THIS WITH lambda_opt estimated from Problem 3
+    lambda_opt = 0.06 # REPLACE THIS WITH lambda_opt estimated from Problem 3
     mses5_train = np.zeros((pmax,2))
     mses5 = np.zeros((pmax,2))
     for p in range(pmax):
