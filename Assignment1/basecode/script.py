@@ -28,9 +28,25 @@ def qdaLearn(X,y):
     # Outputs
     # means - A d x k matrix containing learnt means for each of the k classes
     # covmats - A list of k d x d learnt covariance matrices for each of the k classes
+    labels = np.unique(y)
+    k = len(labels)
+    d = X.shape[1]
     
-    # IMPLEMENT THIS METHOD
-    return
+    means = np.empty((d, k))
+    cov_matrices = []
+    
+    for i, label in enumerate(labels):
+        # Filter data for class
+        X_label = X[y.flatten() == label]
+        
+        # Get mean for class
+        means[:, i] = np.mean(X_label, axis=0)
+        
+        # Calculate covariance matrix
+        cov_matrix = np.cov(X_label, rowvar=False)
+        cov_matrices.append(cov_matrix)
+    
+    return means, cov_matrices
 
 def ldaTest(means,covmat,Xtest,ytest):
     # Inputs
@@ -54,7 +70,35 @@ def qdaTest(means,covmats,Xtest,ytest):
     # ypred - N x 1 column vector indicating the predicted labels
 
     # IMPLEMENT THIS METHOD
-    return
+    N = Xtest.shape[0]
+    k = len(means[0])
+    ypred = np.zeros((N, 1))
+    likelihoods = np.zeros((N, k))
+
+    for i in range(k):
+        mean = means[:, i]
+        cov_matrix = covmats[i]
+
+        # Get determinant and the inverse of covariance
+        det_cov = det(cov_matrix)
+        inv_cov = inv(cov_matrix)
+
+        # Calculate the likelihood
+        for j in range(N):
+            diff = Xtest[j, :] - mean
+            exponent = -0.5 * diff @ inv_cov @ diff.T
+            likelihood = (1 / (sqrt((2 * pi) ** len(mean) * det_cov))) * np.exp(exponent)
+            likelihoods[j, i] = likelihood
+    
+    # Select class with the maximum likelihood
+    ypred = np.argmax(likelihoods, axis=1)
+
+    #update the labels predicted from 0 index to correct values
+    ypred = ypred+np.ones(ypred.shape)
+
+    # Calculate accuracy
+    accuracy = np.mean(ypred.flatten() == ytest.flatten())
+    return accuracy, ypred
 
 def learnOLERegression(X,y):
     # Inputs:                                                         
@@ -140,21 +184,21 @@ if __name__ == "__main__":
     # means,covmat = ldaLearn(X,y)
     # ldaacc,ldares = ldaTest(means,covmat,Xtest,ytest)
     # print('LDA Accuracy = '+str(ldaacc))
-    # # QDA
-    # means,covmats = qdaLearn(X,y)
-    # qdaacc,qdares = qdaTest(means,covmats,Xtest,ytest)
-    # print('QDA Accuracy = '+str(qdaacc))
+    # QDA
+    means,covmats = qdaLearn(X,y)
+    qdaacc,qdares = qdaTest(means,covmats,Xtest,ytest)
+    print('QDA Accuracy = '+str(qdaacc))
 
-    # # plotting boundaries
-    # x1 = np.linspace(-5,20,100)
-    # x2 = np.linspace(-5,20,100)
-    # xx1,xx2 = np.meshgrid(x1,x2)
-    # xx = np.zeros((x1.shape[0]*x2.shape[0],2))
-    # xx[:,0] = xx1.ravel()
-    # xx[:,1] = xx2.ravel()
+    # plotting boundaries
+    x1 = np.linspace(-5,20,100)
+    x2 = np.linspace(-5,20,100)
+    xx1,xx2 = np.meshgrid(x1,x2)
+    xx = np.zeros((x1.shape[0]*x2.shape[0],2))
+    xx[:,0] = xx1.ravel()
+    xx[:,1] = xx2.ravel()
 
-    # fig = plt.figure(figsize=[12,6])
-    # plt.subplot(1, 2, 1)
+    fig = plt.figure(figsize=[12,6])
+    plt.subplot(1, 2, 1)
 
     # zacc,zldares = ldaTest(means,covmat,xx,np.zeros((xx.shape[0],1)))
     # plt.contourf(x1,x2,zldares.reshape((x1.shape[0],x2.shape[0])),alpha=0.3)
@@ -163,12 +207,12 @@ if __name__ == "__main__":
 
     # plt.subplot(1, 2, 2)
 
-    # zacc,zqdares = qdaTest(means,covmats,xx,np.zeros((xx.shape[0],1)))
-    # plt.contourf(x1,x2,zqdares.reshape((x1.shape[0],x2.shape[0])),alpha=0.3)
-    # plt.scatter(Xtest[:,0],Xtest[:,1],c=ytest.ravel())
-    # plt.title('QDA')
+    zacc,zqdares = qdaTest(means,covmats,xx,np.zeros((xx.shape[0],1)))
+    plt.contourf(x1,x2,zqdares.reshape((x1.shape[0],x2.shape[0])),alpha=0.3)
+    plt.scatter(Xtest[:,0],Xtest[:,1],c=ytest.ravel())
+    plt.title('QDA')
 
-    # plt.show()
+    plt.show()
     # Problem 2
     if sys.version_info.major == 2:
         X,y,Xtest,ytest = pickle.load(open('./Assignment1/basecode/diabetes.pickle','rb'))
