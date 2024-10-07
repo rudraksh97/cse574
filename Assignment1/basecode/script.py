@@ -73,33 +73,39 @@ def qdaTest(means,covmats,Xtest,ytest):
     # IMPLEMENT THIS METHOD
     N, _ = Xtest.shape
     ypred = np.zeros((N, 1))
-    num_of_classes = len(covmats)
-    likelihoods = np.zeros((N, num_of_classes))
 
-    for class_index, cov_matrix in enumerate(covmats):
-        mean = means[:, class_index]
+    def get_likelihoods():
+        num_of_classes = len(covmats)
+        likelihoods = np.zeros((N, num_of_classes))
+        
+        for class_index, cov_matrix in enumerate(covmats):
+            mean = means[:, class_index]
 
-        # Get determinant and the inverse of covariance
-        det_cov = det(cov_matrix)
-        inv_cov = inv(cov_matrix)
+            # Get determinant and the inverse of covariance
+            det_cov = det(cov_matrix)
+            inv_cov = inv(cov_matrix)
 
-        # Calculate the likelihood
-        for i in range(N):
-            diff = Xtest[i, :] - mean
-            diff = diff.reshape((-1,1))
-            exponent = np.sum(-0.5 * np.dot(diff.T, np.dot(inv_cov, diff)))
-            likelihood = (1 / (sqrt((2 * pi) ** len(mean) * det_cov))) * np.exp(exponent)
-            likelihoods[i, class_index] = likelihood
-    
+            # Calculate the likelihood
+            for i in range(N):
+                diff = Xtest[i, :] - mean
+                diff = diff.reshape((-1,1))
+                exponent = np.sum(-0.5 * np.dot(diff.T, np.dot(inv_cov, diff)))
+                likelihood = (1 / (sqrt((2 * pi) ** len(mean) * det_cov))) * np.exp(exponent)
+                likelihoods[i, class_index] = likelihood
+        
+        return likelihoods
+
+    likelihoods = get_likelihoods()
+
     # Select class with the maximum likelihood
     ypred = np.argmax(likelihoods, axis=1)
 
     #update the labels predicted from 0 index to correct values
-    ypred = ypred+np.ones(ypred.shape)
+    ypred = ypred + np.ones(ypred.shape)
 
     # Calculate accuracy
-    accuracy = np.mean(ypred.flatten() == ytest.flatten())
-    return accuracy, ypred
+    acc = np.mean(ypred.flatten() == ytest.flatten())
+    return acc, ypred
 
 def learnOLERegression(X,y):
     # Inputs:                                                         
