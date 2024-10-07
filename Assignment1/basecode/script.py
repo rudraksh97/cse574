@@ -28,7 +28,7 @@ def ldaLearn(X,y):
     for i, label in enumerate(class_labels):
         class_data = X[y.flatten() == label]
         means[:, i] = np.mean(class_data, axis=0)
-    
+
     covmat =  np.cov(X.T, bias=True)
     return means, covmat
 
@@ -40,14 +40,14 @@ def qdaLearn(X,y):
     # Outputs
     # means - A d x k matrix containing learnt means for each of the k classes
     # covmats - A list of k d x d learnt covariance matrices for each of the k classes
-    
+
     class_labels = np.unique(y)
     num_of_classes = len(class_labels)
     _, d = X.shape
 
     means = np.zeros((d, num_of_classes))
     covmats = []
-    
+
     for i, label in enumerate(class_labels):
         # Filter data for class
         class_data = X[y.flatten() == label]
@@ -71,9 +71,9 @@ def ldaTest(means,covmat,Xtest,ytest):
     # ypred - N x 1 column vector indicating the predicted labels
 
     # IMPLEMENT THIS METHOD
-    
+
     N, _ = Xtest.shape  
-    
+
     num_of_classes = means.shape[1]
     in_covmat = inv(covmat)    
     ypred = np.zeros((N,1))
@@ -81,11 +81,11 @@ def ldaTest(means,covmat,Xtest,ytest):
     for i in range(N):  
         x = Xtest[i, :]  
         discriminants = np.zeros(num_of_classes)  
-        
-        for j in range(num_of_classes):
-            mean_v = means[:, j]  
-            discriminants[j] = -0.5 * np.dot(np.dot((x - mean_v).T, in_covmat), (x - mean_v))
-        
+
+        for class_index in range(num_of_classes):
+            mean_v = means[:, class_index]  
+            discriminants[class_index] = -0.5 * np.dot(np.dot((x - mean_v).T, in_covmat), (x - mean_v))
+
         ypred[i] = np.argmax(discriminants) + 1  
 
     acc = np.mean(ypred.flatten() == ytest.flatten())
