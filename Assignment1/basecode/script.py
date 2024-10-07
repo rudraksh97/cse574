@@ -75,7 +75,7 @@ def ldaTest(means,covmat,Xtest,ytest):
     N, _ = Xtest.shape  
 
     num_of_classes = means.shape[1]
-    in_covmat = inv(covmat)    
+    inv_cov = inv(covmat)    
     ypred = np.zeros((N,1))
 
     for i in range(N):  
@@ -83,8 +83,8 @@ def ldaTest(means,covmat,Xtest,ytest):
         discriminants = np.zeros(num_of_classes)  
 
         for class_index in range(num_of_classes):
-            mean_v = means[:, class_index]  
-            discriminants[class_index] = -0.5 * np.dot(np.dot((x - mean_v).T, in_covmat), (x - mean_v))
+            mean = means[:, class_index]  
+            discriminants[class_index] = -0.5 * np.dot(np.dot((x - mean).T, inv_cov), (x - mean))
 
         ypred[i] = np.argmax(discriminants) + 1  
 
@@ -145,7 +145,7 @@ def learnOLERegression(X,y):
     # w = d x 1 
 	
     # IMPLEMENT THIS METHOD
-    w = np.matmul(np.matmul(inv(np.matmul(X.T,X)), X.T),y)                                    
+    w = np.dot(np.dot(inv(np.dot(X.T,X)), X.T),y)                                    
     return w
 
 def learnRidgeRegression(X,y,lambd):
@@ -159,7 +159,7 @@ def learnRidgeRegression(X,y,lambd):
     # IMPLEMENT THIS METHOD
     _, d = X.shape
     ridge_term = lambd*np.identity(d)
-    w = np.matmul(np.matmul(inv(ridge_term + np.matmul(X.T,X)), X.T),y)                                                                                     
+    w = np.dot(np.dot(inv(ridge_term + np.dot(X.T,X)), X.T),y)                                                                                     
     return w
 
 def testOLERegression(w,Xtest,ytest):
@@ -172,7 +172,7 @@ def testOLERegression(w,Xtest,ytest):
     
     # IMPLEMENT THIS METHOD
     N, _ = Xtest.shape
-    ypred = np.matmul(Xtest, w)
+    ypred = np.dot(Xtest, w)
     mse = (1/N)*np.sum(np.square(ytest-ypred))
     return mse
 
@@ -184,10 +184,10 @@ def regressionObjVal(w, X, y, lambd):
 
     # IMPLEMENT THIS METHOD
     w = w.reshape(w.shape[0], 1)
-    residual = y - np.matmul(X, w)
-    error = (1 / 2) * np.matmul(residual.T, residual) + (lambd / 2) * np.matmul(w.T, w)
+    residual = y - np.dot(X, w)
+    error = (1 / 2) * np.dot(residual.T, residual) + (lambd / 2) * np.dot(w.T, w)
     error = error[0][0]
-    error_grad = -1 * np.matmul(X.T, residual) + lambd * w
+    error_grad = -1 * np.dot(X.T, residual) + lambd * w
     error_grad = error_grad.flatten()                              
     return error, error_grad
 
