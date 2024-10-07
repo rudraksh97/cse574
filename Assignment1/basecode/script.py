@@ -145,7 +145,7 @@ def learnOLERegression(X,y):
     # w = d x 1 
 	
     # IMPLEMENT THIS METHOD
-    w = np.dot(np.dot(inv(np.dot(X.T,X)), X.T),y)                                    
+    w = np.matmul(np.matmul(inv(np.matmul(X.T,X)), X.T),y)                                    
     return w
 
 def learnRidgeRegression(X,y,lambd):
@@ -159,7 +159,7 @@ def learnRidgeRegression(X,y,lambd):
     # IMPLEMENT THIS METHOD
     _, d = X.shape
     ridge_term = lambd*np.identity(d)
-    w = np.dot(np.dot(inv(ridge_term + np.dot(X.T,X)), X.T),y)                                                                                     
+    w = np.matmul(np.matmul(inv(ridge_term + np.matmul(X.T,X)), X.T),y)                                                                                    
     return w
 
 def testOLERegression(w,Xtest,ytest):
@@ -172,7 +172,7 @@ def testOLERegression(w,Xtest,ytest):
     
     # IMPLEMENT THIS METHOD
     N, _ = Xtest.shape
-    ypred = np.dot(Xtest, w)
+    ypred = np.matmul(Xtest, w)
     mse = (1/N)*np.sum(np.square(ytest-ypred))
     return mse
 
@@ -184,10 +184,10 @@ def regressionObjVal(w, X, y, lambd):
 
     # IMPLEMENT THIS METHOD
     w = w.reshape(w.shape[0], 1)
-    residual = y - np.dot(X, w)
-    error = (1 / 2) * np.dot(residual.T, residual) + (lambd / 2) * np.dot(w.T, w)
+    residual = y - np.matmul(X, w)
+    error = (1 / 2) * np.matmul(residual.T, residual) + (lambd / 2) * np.matmul(w.T, w)
     error = error[0][0]
-    error_grad = -1 * np.dot(X.T, residual) + lambd * w
+    error_grad = -1 * np.matmul(X.T, residual) + lambd * w
     error_grad = error_grad.flatten()                              
     return error, error_grad
 
