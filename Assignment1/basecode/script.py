@@ -277,6 +277,8 @@ if __name__ == "__main__":
     mses3 = np.zeros((k,1))
     for lambd in lambdas:
         w_l = learnRidgeRegression(X_i,y,lambd)
+        if lambd==0.06:
+            w_r = w_l
         mses3_train[i] = testOLERegression(w_l,X_i,y)
         mses3[i] = testOLERegression(w_l,Xtest_i,ytest)
         i = i + 1
@@ -287,6 +289,14 @@ if __name__ == "__main__":
     plt.subplot(1, 2, 2)
     plt.plot(lambdas,mses3)
     plt.title('MSE for Test Data')
+
+    fig = plt.figure(figsize=[12,6])
+    plt.subplot(1, 2, 1)
+    plt.plot(range(X_i.shape[1]),w_i)
+    plt.title('Weights for OLE')
+    plt.subplot(1, 2, 2)
+    plt.plot(range(X_i.shape[1]),w_r)
+    plt.title('Weights for Ridge')
 
     plt.show()
     # Problem 4
