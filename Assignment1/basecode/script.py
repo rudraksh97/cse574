@@ -18,7 +18,19 @@ def ldaLearn(X,y):
     # covmat - A single d x d learnt covariance matrix 
     
     # IMPLEMENT THIS METHOD 
-    return
+    _, d = X.shape
+
+    class_labels = np.unique(y)
+    num_of_classes = len(class_labels)
+
+    means = np.zeros((d, num_of_classes))
+
+    for i, label in enumerate(class_labels):
+        class_data = X[y.flatten() == label]
+        means[:, i] = np.mean(class_data, axis=0)
+    
+    covmat =  np.cov(X.T, bias=True)
+    return means, covmat
 
 def qdaLearn(X,y):
     # Inputs
@@ -29,22 +41,22 @@ def qdaLearn(X,y):
     # means - A d x k matrix containing learnt means for each of the k classes
     # covmats - A list of k d x d learnt covariance matrices for each of the k classes
     
-    labels = np.unique(y)
-    num_of_classes = len(labels)
+    class_labels = np.unique(y)
+    num_of_classes = len(class_labels)
     _, d = X.shape
 
     means = np.zeros((d, num_of_classes))
     covmats = []
     
-    for i, label in enumerate(labels):
+    for i, label in enumerate(class_labels):
         # Filter data for class
-        X_label = X[y.flatten() == label]
+        class_data = X[y.flatten() == label]
         
         # Get mean for each class
-        means[:, i] = np.mean(X_label, axis=0)
+        means[:, i] = np.mean(class_data, axis=0)
         
         # Calculate covariance matrix for each class
-        cov_matrix = np.cov(X_label, rowvar=False)
+        cov_matrix = np.cov(class_data, rowvar=False)
         covmats.append(cov_matrix)
     
     return means, covmats
@@ -59,7 +71,25 @@ def ldaTest(means,covmat,Xtest,ytest):
     # ypred - N x 1 column vector indicating the predicted labels
 
     # IMPLEMENT THIS METHOD
-    return
+    
+    N, _ = Xtest.shape  
+    
+    num_of_classes = means.shape[1]
+    in_covmat = inv(covmat)    
+    ypred = np.zeros((N,1))
+
+    for i in range(N):  
+        x = Xtest[i, :]  
+        discriminants = np.zeros(num_of_classes)  
+        
+        for j in range(num_of_classes):
+            mean_v = means[:, j]  
+            discriminants[j] = -0.5 * np.dot(np.dot((x - mean_v).T, in_covmat), (x - mean_v))
+        
+        ypred[i] = np.argmax(discriminants) + 1  
+
+    acc = np.mean(ypred.flatten() == ytest.flatten())
+    return acc, ypred
 
 def qdaTest(means,covmats,Xtest,ytest):
     # Inputs
@@ -187,10 +217,10 @@ if __name__ == "__main__":
     else:
         X,y,Xtest,ytest = pickle.load(open('./Assignment1/basecode/sample.pickle','rb'),encoding = 'latin1')
 
-    # # LDA
-    # means,covmat = ldaLearn(X,y)
-    # ldaacc,ldares = ldaTest(means,covmat,Xtest,ytest)
-    # print('LDA Accuracy = '+str(ldaacc))
+    # LDA
+    means,covmat = ldaLearn(X,y)
+    ldaacc,ldares = ldaTest(means,covmat,Xtest,ytest)
+    print('LDA Accuracy = '+str(ldaacc))
     # QDA
     means,covmats = qdaLearn(X,y)
     qdaacc,qdares = qdaTest(means,covmats,Xtest,ytest)
@@ -207,12 +237,12 @@ if __name__ == "__main__":
     fig = plt.figure(figsize=[12,6])
     plt.subplot(1, 2, 1)
 
-    # zacc,zldares = ldaTest(means,covmat,xx,np.zeros((xx.shape[0],1)))
-    # plt.contourf(x1,x2,zldares.reshape((x1.shape[0],x2.shape[0])),alpha=0.3)
-    # plt.scatter(Xtest[:,0],Xtest[:,1],c=ytest.ravel())
-    # plt.title('LDA')
+    zacc,zldares = ldaTest(means,covmat,xx,np.zeros((xx.shape[0],1)))
+    plt.contourf(x1,x2,zldares.reshape((x1.shape[0],x2.shape[0])),alpha=0.3)
+    plt.scatter(Xtest[:,0],Xtest[:,1],c=ytest.ravel())
+    plt.title('LDA')
 
-    # plt.subplot(1, 2, 2)
+    plt.subplot(1, 2, 2)
 
     zacc,zqdares = qdaTest(means,covmats,xx,np.zeros((xx.shape[0],1)))
     plt.contourf(x1,x2,zqdares.reshape((x1.shape[0],x2.shape[0])),alpha=0.3)
