@@ -28,25 +28,26 @@ def qdaLearn(X,y):
     # Outputs
     # means - A d x k matrix containing learnt means for each of the k classes
     # covmats - A list of k d x d learnt covariance matrices for each of the k classes
-    labels = np.unique(y)
-    k = len(labels)
-    d = X.shape[1]
     
-    means = np.empty((d, k))
-    cov_matrices = []
+    labels = np.unique(y)
+    num_of_classes = len(labels)
+    _, d = X.shape
+
+    means = np.zeros((d, num_of_classes))
+    covmats = []
     
     for i, label in enumerate(labels):
         # Filter data for class
         X_label = X[y.flatten() == label]
         
-        # Get mean for class
+        # Get mean for each class
         means[:, i] = np.mean(X_label, axis=0)
         
-        # Calculate covariance matrix
+        # Calculate covariance matrix for each class
         cov_matrix = np.cov(X_label, rowvar=False)
-        cov_matrices.append(cov_matrix)
+        covmats.append(cov_matrix)
     
-    return means, cov_matrices
+    return means, covmats
 
 def ldaTest(means,covmat,Xtest,ytest):
     # Inputs
