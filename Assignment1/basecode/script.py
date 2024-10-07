@@ -71,25 +71,25 @@ def qdaTest(means,covmats,Xtest,ytest):
     # ypred - N x 1 column vector indicating the predicted labels
 
     # IMPLEMENT THIS METHOD
-    N = Xtest.shape[0]
-    k = len(means[0])
+    N, _ = Xtest.shape
     ypred = np.zeros((N, 1))
-    likelihoods = np.zeros((N, k))
+    num_of_classes = len(covmats)
+    likelihoods = np.zeros((N, num_of_classes))
 
-    for i in range(k):
-        mean = means[:, i]
-        cov_matrix = covmats[i]
+    for class_index, cov_matrix in enumerate(covmats):
+        mean = means[:, class_index]
 
         # Get determinant and the inverse of covariance
         det_cov = det(cov_matrix)
         inv_cov = inv(cov_matrix)
 
         # Calculate the likelihood
-        for j in range(N):
-            diff = Xtest[j, :] - mean
-            exponent = -0.5 * diff @ inv_cov @ diff.T
+        for i in range(N):
+            diff = Xtest[i, :] - mean
+            diff = diff.reshape((-1,1))
+            exponent = np.sum(-0.5 * np.dot(diff.T, np.dot(inv_cov, diff)))
             likelihood = (1 / (sqrt((2 * pi) ** len(mean) * det_cov))) * np.exp(exponent)
-            likelihoods[j, i] = likelihood
+            likelihoods[i, class_index] = likelihood
     
     # Select class with the maximum likelihood
     ypred = np.argmax(likelihoods, axis=1)
