@@ -49,7 +49,7 @@ def preprocess():
      Some suggestions for preprocessing step:
      - feature selection"""
 
-    mat = loadmat('./Assignment2//basecode//mnist_all.mat')  # loads the MAT object as a Dictionary
+    mat = loadmat('mnist_all.mat')  # loads the MAT object as a Dictionary
 
     # Split the training sets into two sets of 50000 randomly sampled training examples and 10000 validation examples. 
     # Your code here.
