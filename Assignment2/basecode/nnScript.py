@@ -24,8 +24,7 @@ def initializeWeights(n_in, n_out):
 def sigmoid(z):
     """# Notice that z can be a scalar, a vector or a matrix
     # return the sigmoid of input z"""
-
-    return  # your code here
+    return  1/(1+np.exp(-z))
 
 
 def preprocess():
@@ -54,7 +53,7 @@ def preprocess():
 
     # Split the training sets into two sets of 50000 randomly sampled training examples and 10000 validation examples. 
     # Your code here.
-    
+
 
     # Feature selection
     # Your code here.
