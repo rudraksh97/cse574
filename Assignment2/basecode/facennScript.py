@@ -27,7 +27,7 @@ def initializeWeights(n_in,n_out):
 
 # Replace this with your sigmoid implementation
 def sigmoid(z):
-    
+    return 1/(1+np.exp(-z))
     
 # Replace this with your nnObjFunction implementation
 def nnObjFunction(params, *args):
