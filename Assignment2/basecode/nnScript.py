@@ -49,15 +49,38 @@ def preprocess():
      Some suggestions for preprocessing step:
      - feature selection"""
 
-    mat = loadmat('mnist_all.mat')  # loads the MAT object as a Dictionary
+    mat = loadmat('./Assignment2//basecode//mnist_all.mat')  # loads the MAT object as a Dictionary
 
     # Split the training sets into two sets of 50000 randomly sampled training examples and 10000 validation examples. 
     # Your code here.
+    n = 9
+    split = 50000
 
+    total_train = np.append(mat['train0'], np.zeros((mat['train0'].shape[0],1)), axis=1)
+    test = np.append(mat['test0'], np.zeros((mat['test0'].shape[0],1)), axis=1)
 
-    # Feature selection
-    # Your code here.
+    for i in range(1, n+1):
+      total_train = np.append(total_train, np.append(mat[f'train{i}'], i*np.ones((mat[f'train{i}'].shape[0],1)), axis=1), axis=0)
+      test = np.append(test, np.append(mat[f'test{i}'], i*np.ones((mat[f'test{i}'].shape[0],1)), axis=1), axis=0)
 
+    indices = np.arange(len(total_train))
+    np.random.shuffle(indices)
+
+    train_indices = indices[:split]
+    validation_indices = indices[split:]
+
+    train = total_train[train_indices]
+    validation = total_train[validation_indices]
+
+    train_data = train[:,:-1]
+    train_label = train[:, -1].reshape(-1,1)
+
+    validation_data = validation[:, :-1]
+    validation_label = validation[:, -1].reshape(-1,1)
+
+    test_data = test[:, :-1]
+    test_label = test[:, -1].reshape(-1,1)
+    
     print('preprocess done')
 
     return train_data, train_label, validation_data, validation_label, test_data, test_label
