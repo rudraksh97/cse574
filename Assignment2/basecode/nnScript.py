@@ -169,7 +169,7 @@ def nnPredict(w1, w2, data):
     h1_bias = np.append(h1, np.ones((h1.shape[0], 1)), axis=1)
     output = sigmoid(np.dot(h1_bias, w2.T))
     labels = np.argmax(output, axis=1)
-    return labels
+    return labels.reshape((-1,1))
 
 
 """**************Neural Network Script Starts here********************************"""
