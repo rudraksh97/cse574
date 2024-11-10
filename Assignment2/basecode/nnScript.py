@@ -164,9 +164,11 @@ def nnPredict(w1, w2, data):
     % Output: 
     % label: a column vector of predicted labels"""
 
-    labels = np.array([])
-    # Your code here
-
+    data_bias = np.append(data, np.ones((data.shape[0], 1)), axis=1)
+    h1 = sigmoid(np.dot(data_bias, w1.T))
+    h1_bias = np.append(h1, np.ones((h1.shape[0], 1)), axis=1)
+    output = sigmoid(np.dot(h1_bias, w2.T))
+    labels = np.argmax(output, axis=1)
     return labels
 
 
