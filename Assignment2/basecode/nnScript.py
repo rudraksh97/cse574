@@ -72,14 +72,14 @@ def preprocess():
     train = total_train[train_indices]
     validation = total_train[validation_indices]
 
-    train_data = train[:,:-1]
-    train_label = train[:, -1].reshape(-1,1)
+    train_data = train[:,:-1] / 255.0
+    train_label = train[:, -1].astype(int)
 
-    validation_data = validation[:, :-1]
-    validation_label = validation[:, -1].reshape(-1,1)
+    validation_data = validation[:, :-1] / 255.0
+    validation_label = validation[:, -1].astype(int)
 
-    test_data = test[:, :-1]
-    test_label = test[:, -1].reshape(-1,1)
+    test_data = test[:, :-1] / 255.0
+    test_label = test[:, -1].astype(int)
     
     print('preprocess done')
 
@@ -130,20 +130,27 @@ def nnObjFunction(params, *args):
     w2 = params[(n_hidden * (n_input + 1)):].reshape((n_class, (n_hidden + 1)))
     obj_val = 0
 
-    # Your code here
-    #
-    #
-    #
-    #
-    #
+    n = training_data.shape[0]
+    training_data = np.append(training_data, np.ones((n, 1)), axis=1)
+    h1 = sigmoid(np.dot(training_data, w1.T))
+    h1 = np.append(h1, np.ones((h1.shape[0], 1)), axis=1)
+    output = sigmoid(np.dot(h1, w2.T))
 
+    y = np.zeros((n, n_class))
+    
+    for i, value in enumerate(training_label):
+        digit = int(value)
+        y[i][digit] = 1
 
+    obj_val = -np.sum(y * np.log(output) + (1 - y) * np.log(1 - output)) / n + (lambdaval / (2 * n)) * (np.sum(w1[:, :-1] ** 2) + np.sum(w2[:, :-1] ** 2))
 
-    # Make sure you reshape the gradient matrices to a 1D array. for instance if your gradient matrices are grad_w1 and grad_w2
-    # you would use code similar to the one below to create a flat array
-    # obj_grad = np.concatenate((grad_w1.flatten(), grad_w2.flatten()),0)
-    obj_grad = np.array([])
+    delta_output = output - y
+    delta_h1 = np.dot(delta_output, w2) * h1 * (1 - h1)
+    delta_h1 = delta_h1[:, :-1]
 
+    grad_w1 = (np.dot(delta_h1.T, training_data) + lambdaval * np.append(w1[:, :-1], np.zeros((n_hidden, 1)), axis=1)) / n
+    grad_w2 = (np.dot(delta_output.T, h1) + lambdaval * np.append(w2[:, :-1], np.zeros((n_class, 1)), axis=1)) / n
+    obj_grad = np.concatenate((grad_w1.flatten(), grad_w2.flatten()), axis=0)
     return (obj_val, obj_grad)
 
 
@@ -166,8 +173,8 @@ def nnPredict(w1, w2, data):
 
     data_bias = np.append(data, np.ones((data.shape[0], 1)), axis=1)
     h1 = sigmoid(np.dot(data_bias, w1.T))
-    h1_bias = np.append(h1, np.ones((h1.shape[0], 1)), axis=1)
-    output = sigmoid(np.dot(h1_bias, w2.T))
+    h1 = np.append(h1, np.ones((h1.shape[0], 1)), axis=1)
+    output = sigmoid(np.dot(h1, w2.T))
     labels = np.argmax(output, axis=1)
     return labels.reshape((-1,1))
 
