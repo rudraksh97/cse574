@@ -73,13 +73,13 @@ def preprocess():
     validation = total_train[validation_indices]
 
     train_data = train[:,:-1] / 255.0
-    train_label = train[:, -1].astype(int)
+    train_label = train[:, -1].reshape((-1,1))
 
     validation_data = validation[:, :-1] / 255.0
-    validation_label = validation[:, -1].astype(int)
+    validation_label = validation[:, -1].reshape((-1,1))
 
     test_data = test[:, :-1] / 255.0
-    test_label = test[:, -1].astype(int)
+    test_label = test[:, -1].reshape((-1,1))
     
     print('preprocess done')
 
