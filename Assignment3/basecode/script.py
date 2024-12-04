@@ -116,9 +116,21 @@ def blrObjFunction(initialWeights, *args):
     # YOUR CODE HERE #
     ##################
     # HINT: Do not forget to add the bias term to your input data
+    bias = np.ones((n_data, 1))
+    X = np.hstack((bias, train_data))
 
+    h_x = sigmoid(np.dot(X, initialWeights.reshape((n_features + 1, 1))))
+    
+    error = -np.sum(labeli * np.log(h_x) + (1 - labeli) * np.log(1 - h_x)) / n_data
+    error_grad = np.dot(X.T, (h_x - labeli)) / n_data
+
+    # print(error)
+    # print(error_grad.shape)
     return error, error_grad
 
+def blrObjWrapper(initialWeights, *args):
+    error, error_grad = blrObjFunction(initialWeights, *args)
+    return error, error_grad.flatten()
 
 def blrPredict(W, data):
     """
@@ -141,6 +153,11 @@ def blrPredict(W, data):
     # YOUR CODE HERE #
     ##################
     # HINT: Do not forget to add the bias term to your input data
+    bias = np.ones((data.shape[0], 1))
+    X = np.hstack((bias, data))
+
+    probabilities = sigmoid(np.dot(X, W))
+    label = np.argmax(probabilities, axis=1).reshape((data.shape[0], 1))
 
     return label
 
@@ -227,9 +244,9 @@ if __name__ == "__main__":
     for i in range(n_class):
         labeli = Y[:, i].reshape(n_train, 1)
         args = (train_data, labeli)
-        nn_params = minimize(blrObjFunction, initialWeights, jac=True, args=args, method='CG', options=opts)
+        nn_params = minimize(blrObjWrapper, initialWeights.flatten(), jac=True, args=args, method='CG', options=opts)
         W[:, i] = nn_params.x.reshape((n_feature + 1,))
-    
+
     # Find the accuracy on Training Dataset
     predicted_label = blrPredict(W, train_data)
     print('\n Training set Accuracy:' + str(100 * np.mean((predicted_label == train_label).astype(float))) + '%')
