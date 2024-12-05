@@ -207,7 +207,18 @@ def mlrObjFunction(params, *args):
     ##################
     # HINT: Do not forget to add the bias term to your input data
 
-    return error, error_grad
+    R_W = params.reshape((n_feature + 1, n_class))
+
+    training_data = np.hstack((np.ones((n_data, 1)), train_data))  
+
+    logits = np.dot(training_data,R_W) 
+    expLogi = np.exp(logits - np.max(logits, axis=1,  keepdims=True))  
+    probs = expLogi / np.sum(expLogi, axis=1, keepdims=True)  
+
+    error_grad = np.dot(training_data.T,(probs - labeli)) / n_data  
+    error =  -np.sum(labeli * np.log(probs)) / n_data
+
+    return error, error_grad.flatten()
 
 
 def mlrPredict(W, data):
@@ -231,8 +242,17 @@ def mlrPredict(W, data):
     # YOUR CODE HERE #
     ##################
     # HINT: Do not forget to add the bias term to your input data
+    Num_data = data.shape[0]
 
-    return label
+    data = np.hstack((np.ones((Num_data, 1)), data))  
+
+    logits = np.dot(data, W)  
+    expLogits = np.exp(logits - np.max(logits, axis=1, keepdims=True))  
+    probs = expLogits / np.sum(expLogits, axis=1, keepdims=True)  
+
+    label = np.argmax(probs, axis=1)  
+
+    return label.reshape(-1,1)
 
 
 if __name__ == "__main__":
@@ -431,7 +451,7 @@ if __name__ == "__main__":
     args_b = (train_data, Y)
     nn_params = minimize(
         mlrObjFunction,
-        initialWeights_b,
+        initialWeights_b.flatten(),
         jac=True,
         args=args_b,
         method="CG",
