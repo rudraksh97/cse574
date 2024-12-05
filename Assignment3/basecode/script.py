@@ -213,6 +213,11 @@ def mlrObjFunction(params, *args):
     probability_dist = expLogits / np.sum(expLogits, axis=1, keepdims=True)  
     error_grad = np.dot(training_data.T, (probability_dist - labeli)) / n_data  
     error =  -np.sum(labeli * np.log(probability_dist)) / n_data
+
+    log_probabilities = np.log(probability_dist)
+    total_error = -np.sum(labeli * log_probabilities, axis=0) / n_data
+    print(total_error)
+
     return error, error_grad.flatten()
 
 def mlrPredict(W, data):
