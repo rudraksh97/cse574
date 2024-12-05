@@ -279,10 +279,26 @@ if __name__ == "__main__":
         )
         W[:, i] = nn_params.x.reshape((n_feature + 1,))
 
+    for i in range(n_class):
+        labeli = Y[:, i].reshape(n_train, 1)
+        args = (train_data, labeli)
+        error, error_grad = blrObjFunction(W[:, i].flatten(), *args)
+        print(f"Training set error for {i}: {error}")
+
+    Y = np.zeros((test_data.shape[0], n_class))
+    for i in range(n_class):
+        Y[:, i] = (test_label == i).astype(int).ravel()
+
+    for i in range(n_class):
+        labeli = Y[:, i].reshape(test_data.shape[0], 1)
+        args = (test_data, labeli)
+        error, error_grad = blrObjFunction(W[:, i].flatten(), *args)
+        print(f"Testing set error for {i}: {error}")
+
     # Find the accuracy on Training Dataset
     predicted_label = blrPredict(W, train_data)
     print(
-        "\n Training set Accuracy:"
+        "\n Training set overall Accuracy:"
         + str(100 * np.mean((predicted_label == train_label).astype(float)))
         + "%"
     )
@@ -290,7 +306,7 @@ if __name__ == "__main__":
     # Find the accuracy on Validation Dataset
     predicted_label = blrPredict(W, validation_data)
     print(
-        "\n Validation set Accuracy:"
+        "\n Validation set overall Accuracy:"
         + str(100 * np.mean((predicted_label == validation_label).astype(float)))
         + "%"
     )
@@ -298,7 +314,7 @@ if __name__ == "__main__":
     # Find the accuracy on Testing Dataset
     predicted_label = blrPredict(W, test_data)
     print(
-        "\n Testing set Accuracy:"
+        "\n Testing set overall Accuracy:"
         + str(100 * np.mean((predicted_label == test_label).astype(float)))
         + "%"
     )
@@ -347,7 +363,7 @@ if __name__ == "__main__":
         "%",
     )
 
-    # Test with radial basis function
+    # Test with radial basis function gamma = 1
     model_rbf_1 = svm.SVC(kernel="rbf", gamma=1)
     model_rbf_1.fit(sample_train_data, sample_train_label)
 
@@ -368,6 +384,31 @@ if __name__ == "__main__":
     predicted_label = model_rbf_1.predict(test_data)
     print(
         "\n SVM rbf and gamma=1 Testing set Accuracy:",
+        metrics.accuracy_score(y_true=test_label, y_pred=predicted_label) * 100,
+        "%",
+    )
+
+    # Test with radial basis function default gamma
+    model_rbf = svm.SVC(kernel="rbf")
+    model_rbf.fit(sample_train_data, sample_train_label)
+
+    predicted_label = model_rbf.predict(train_data)
+    print(
+        "\n SVM rbf Training set Accuracy:",
+        metrics.accuracy_score(y_true=train_label, y_pred=predicted_label) * 100,
+        "%",
+    )
+
+    predicted_label = model_rbf.predict(validation_data)
+    print(
+        "\n SVM rbf Validation set Accuracy:",
+        metrics.accuracy_score(y_true=validation_label, y_pred=predicted_label) * 100,
+        "%",
+    )
+
+    predicted_label = model_rbf.predict(test_data)
+    print(
+        "\n SVM rbf Testing set Accuracy:",
         metrics.accuracy_score(y_true=test_label, y_pred=predicted_label) * 100,
         "%",
     )
@@ -413,13 +454,39 @@ if __name__ == "__main__":
     plt.plot(c_values, validation_acc, label="Validation Accuracy", marker='^', color="yellow")
     plt.plot(c_values, test_acc, label="Testing Accuracy", marker='o', color="green")
 
-    # Customize the plot
     plt.xlabel("C: Regularization parameter")
     plt.ylabel("Accuracy(%)")
     plt.xticks(c_values, labels=c_values)
-    # plt.grid(True, which="both", linestyle="--", linewidth=0.5)
-    # plt.legend(loc="best")
     plt.show()
+
+    # Predict with complete dataset training 
+    model = svm.SVC(C=10)
+    model.fit(train_data, train_label)
+
+    predicted_label = model.predict(train_data)
+    accuracy = metrics.accuracy_score(y_true=train_label, y_pred=predicted_label) * 100
+    print(
+        f"\n SVM rbf total train dataset with c:10 Training set Accuracy:",
+        accuracy,
+        "%",
+    )
+
+    predicted_label = model.predict(validation_data)
+    accuracy = metrics.accuracy_score(y_true=validation_label, y_pred=predicted_label) * 100
+    print(
+        f"\n SVM  rbf total train dataset with c:10 Validation set Accuracy:",
+        accuracy,
+        "%",
+    )
+
+    predicted_label = model.predict(test_data)
+    accuracy = metrics.accuracy_score(y_true=test_label, y_pred=predicted_label) * 100
+    print(
+        f"\n SVM rbf total train dataset with c:10 Testing set Accuracy:",
+        accuracy,
+        "%",
+    )
+
     """
     Script for Extra Credit Part
     """
